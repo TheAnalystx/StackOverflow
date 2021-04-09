@@ -1,0 +1,52 @@
+
+def is_prime(num):
+    if num > 2:
+        for i in range(2, int(num/2)+1):
+            if (num % i) == 0:
+                return False
+        else:
+            return True
+    else:
+        return False
+
+lifespan = 10
+
+humans = 52
+titans = 12
+
+days = 12
+lst_days = list(range(0, days+1, 1))
+lst_prime_days = [is_prime(x) for x in lst_days]
+tup_days = list(zip(lst_days, lst_prime_days))
+
+population = [(humans, 0)]
+
+for day, is_prime in tup_days:
+
+    if is_prime:
+        total_humans = sum([hum for hum, _ in population])
+        population += [(total_humans, 0)]
+
+    if (day != 0) & (day%2 == 0):
+        hunger = titans * 2
+        population_youngest = list(reversed(population))
+        while hunger > 0:
+            generation = population_youngest[0]
+            hum = generation[0]
+            age = generation[1]
+            survivors = hum - hunger
+            if survivors > 0:
+                hunger = 0
+                population_youngest = [(survivors, age)] + population_youngest[1:]
+            else:
+                hunger -= hum
+                population_youngest = population_youngest[1:]
+                if not population_youngest:
+                    break
+
+        population = list(reversed(population_youngest))
+
+
+    population = [(hum, age+1) for hum, age in population if age+1 < lifespan]
+    print(day, sum([hum for hum, _ in population]))
+
